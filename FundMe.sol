@@ -32,6 +32,7 @@ contract FundMe{
             fundinfo[senders[fuIndex]]=0;
         }
         senders=new address[](0);
+    payable(msg.sender).transfer(address(this).balance);
     }
     
 }

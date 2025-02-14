@@ -14,10 +14,12 @@ contract FundMe{
     uint256 l=5e18;
     address[] public senders;
     mapping(address funder=> uint256 amtFunded)  public fundinfo;
+    address owner;
 
 
-
-
+    constructor(){
+        owner=msg.sender;
+    }
 
 
     function fund() public payable{
@@ -27,12 +29,25 @@ contract FundMe{
         fundinfo[msg.sender]+=msg.value.getConversionRate();
     }
 
-    function withdraw() public {
+
+
+    function withdraw() public checkowner {
+        
          for (uint256 fuIndex=0;fuIndex<senders.length;fuIndex++){
             fundinfo[senders[fuIndex]]=0;
         }
         senders=new address[](0);
+    //(msg.sender).transfer.(address(this).balance) -- Easiest way to transfer money 2300 gas.If not transacted returns error.
     payable(msg.sender).transfer(address(this).balance);
+    //(msg.sender).transfer.(address(this).balance) -- Returns bool value to transfer money 2300 gas.
+    bool success=payable(msg.sender).send(address(this).balance);
+    //(msg.sender).call{value:address(this).balance}(function); -Returns bool and value of called function.
+    (bool sendsuccess,)=payable(msg.sender).call{value:address(this).balance}("");
+    }
+
+    modifier checkowner(){
+        require(msg.sender==owner,"Must be a owner");
+        _;
     }
     
 }

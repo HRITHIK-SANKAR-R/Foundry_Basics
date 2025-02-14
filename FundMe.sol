@@ -7,15 +7,15 @@ import {PriceConverter} from "./PriceConverter.sol";
 //priceinusd() : give price of one eth in usd
 //getConversionRate() : gives price of the ETH fund in the form of usd.
 //getVersion() : gives version of the contract which we use to convert from one Blockchain value to USD
-
+error NotOwner();
 
 contract FundMe{
     using PriceConverter for uint256;
-    uint256 l=5e18;
+    uint256 public constant l=5e18;
     address[] public senders;
     mapping(address funder=> uint256 amtFunded)  public fundinfo;
-    address owner;
-
+    address public immutable owner;
+ 
 
     constructor(){
         owner=msg.sender;
@@ -46,8 +46,12 @@ contract FundMe{
     }
 
     modifier checkowner(){
-        require(msg.sender==owner,"Must be a owner");
+        // require(msg.sender==owner,"Must be a owner");
+        // _;
+
+        if(msg.sender != owner){revert NotOwner();}
         _;
+        //Above statement is new and now it is Gas-efficient.
     }
     
 }

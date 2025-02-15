@@ -53,5 +53,11 @@ contract FundMe{
         _;
         //Above statement is new and now it is Gas-efficient.
     }
+    receive() external payable{
+        fund();
+    }
+    fallback() external payable{
+        fund();
+    }
     
 }
